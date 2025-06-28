@@ -1,0 +1,10 @@
+[project]
+name = "infra-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "kubernetes>=33.1.0",
+    "langgraph>=0.5.0",
+]
