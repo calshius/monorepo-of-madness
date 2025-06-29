@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infra-agent
+  namespace: callum-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infra-agent
+  template:
+    metadata:
+      labels:
+        app: infra-agent
+    spec:
+      containers:
+        - name: infra-agent
+          image: infra-agent:latest
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: huggingface-secret
+                  key: HF_TOKEN
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: kube-config
+              mountPath: /root/.kube
+      volumes:
+        - name: kube-config
+          hostPath:
+            path: /home/your-user/.kube
+            type: Directory
