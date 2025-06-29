@@ -1,8 +1,8 @@
 from huggingface_hub import InferenceClient
 
 class HuggingFaceLLM:
-    def __init__(self, api_token, model="mistralai/Mistral-7B-Instruct-v0.2"):
-        self.client = InferenceClient(token=api_token)
+    def __init__(self, api_token, model="Menlo/Jan-nano-128k"):
+        self.client = InferenceClient(api_key=api_token)
         self.model = model
 
     def __call__(self, prompt):

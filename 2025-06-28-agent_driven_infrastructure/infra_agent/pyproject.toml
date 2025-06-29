@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "kubernetes>=33.1.0",
-    "langgraph>=0.5.0",
+    "langgraph",
+    "kubernetes",
+    "huggingface_hub",
 ]
