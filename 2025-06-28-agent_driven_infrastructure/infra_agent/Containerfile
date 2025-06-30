@@ -1,0 +1,17 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install uv
+RUN pip install uv
+
+# Copy project files
+COPY pyproject.toml .
+COPY src/infra_agent ./src/infra_agent
+
+# Install dependencies with uv
+RUN uv pip install --system --no-cache-dir .
+
+ENV PYTHONPATH=/app/src
+
+CMD ["python", "-m", "infra_agent.main"]
