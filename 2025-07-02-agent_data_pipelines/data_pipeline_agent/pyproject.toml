@@ -1,0 +1,16 @@
+[project]
+name = "data-pipeline-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph",
+    "kubernetes",
+    "langchain-google-genai>=2.1.6",
+    "bs4>=0.0.2",
+    "pdfplumber>=0.11.7",
+    "geopy[aiohttp]>=2.4.1",
+    "ruff>=0.12.1",
+    "langchain>=0.3.26",
+]
