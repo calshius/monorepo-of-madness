@@ -10,13 +10,3 @@ This application is an **automated data pipeline for extracting, cleaning, and g
 6. **Cleans up** all temporary files to keep your environment tidy.
 
 The pipeline is robust, parallelized, and designed to recover gracefully from errors or model overloads. It’s ideal for researchers, data journalists, or hobbyists interested in mapping and analyzing UFO sightings across the UK.
-
----
-
-### Snappy Blog Title
-
-**"From Government PDFs to UFO Maps: Automating the Extraction and Geolocation of UK Sighting Reports"**
-
-Or, for something punchier:
-
-**"Turning UK UFO PDFs into Mappable Data—Fully Automated!"**
