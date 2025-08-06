@@ -1,0 +1,70 @@
+{
+  "name": "recipe-copilot-tool",
+  "version": "1.0.0",
+  "description": "VS Code Copilot tool for finding BBC Food recipes",
+  "publisher": "cf-tech",
+  "main": "out/extension.js",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onCommand:workbench.action.chat.open"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "recipe-finder.search",
+        "title": "Search Recipes",
+        "category": "Recipe Finder"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "recipe.finder",
+        "name": "recipe",
+        "description": "Find BBC Food recipes by ingredient or dish name",
+        "isSticky": true
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "recipe_search",
+        "displayName": "Recipe Search",
+        "modelDescription": "Search BBC Food for recipes by ingredient or dish name",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "recipe_search",
+        "icon": "search",
+        "userDescription": "Search BBC Food for recipes by ingredient or dish name",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The recipe search query (ingredient, dish name, etc.)"
+            },
+            "maxResults": {
+              "type": "number",
+              "description": "Maximum number of recipes to return (default: 8)"
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^3.3.2"
+  }
+}
