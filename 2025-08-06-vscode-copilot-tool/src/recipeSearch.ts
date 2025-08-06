@@ -30,7 +30,7 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
             title: 'Search BBC Food for Recipes',
             message: new vscode.MarkdownString(
                 `Search BBC Food for "${options.input.query}" recipes?` +
-                (options.input.maxResults 
+                (options.input.maxResults
                     ? ` (showing up to ${options.input.maxResults} results)`
                     : ' (showing up to 8 results)')
             ),
@@ -104,18 +104,18 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
 
             const $link = $(element);
             const href = $link.attr('href');
-            
+
             // Get clean text content, excluding any image tags
             const $clone = $link.clone();
             $clone.find('img').remove(); // Remove any images
             const linkText = $clone.text().trim();
-            
+
             if (!href || !linkText || linkText.length < 10) return; // Skip if not enough info
-            
+
             // Parse the link text which contains recipe info
             // Format: "Recipe Name by Chef COURSE Serves X Prep: Y Cook: Z"
             const url = href.startsWith('http') ? href : `https://www.bbc.co.uk${href}`;
-            
+
             // Extract recipe title (everything before " by ")
             let title = linkText;
             let chef = '';
@@ -123,12 +123,12 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
             let prepTime = '';
             let cookTime = '';
             let servings = '';
-            
+
             const byMatch = linkText.match(/^(.+?)\s+by\s+(.+?)(\s+[A-Z][A-Z\s]+.*)$/);
             if (byMatch) {
                 title = byMatch[1].trim();
                 const remainder = byMatch[2] + byMatch[3];
-                
+
                 // Find where the chef name ends and course info begins
                 const courseMatch = remainder.match(/^(.+?)\s+(MAIN COURSE|STARTER|DESSERT|SIDE DISH|SNACK|CANAPÉ|BREAKFAST|LIGHT MEALS|DINNER PARTY|AFTERNOON TEA|DESSERTS)(.*)$/);
                 if (courseMatch) {
@@ -138,19 +138,19 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
                     chef = remainder.trim();
                 }
             }
-            
+
             // Extract serving, prep, and cook info from courseInfo
             if (courseInfo) {
                 const servesMatch = courseInfo.match(/Serves?\s+([^P]+?)(?=\s+Prep:|$)/);
                 if (servesMatch) servings = servesMatch[1].trim();
-                
+
                 const prepMatch = courseInfo.match(/Prep:\s+([^C]+?)(?=\s+Cook:|$)/);
                 if (prepMatch) prepTime = prepMatch[1].trim();
-                
+
                 const cookMatch = courseInfo.match(/Cook:\s*(.+?)$/);
                 if (cookMatch) cookTime = cookMatch[1].trim();
             }
-            
+
             // Only add if we have a meaningful title
             if (title && title.length > 3 && !title.includes('srcSet')) {
                 recipes.push({
@@ -169,14 +169,14 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
             // Look for any links with recipe URLs
             $('a').each((index, element) => {
                 if (index >= maxResults) return false;
-                
+
                 const $link = $(element);
                 const href = $link.attr('href');
-                
+
                 if (href && href.includes('/food/recipes/') && href.length > 20) {
                     const url = href.startsWith('http') ? href : `https://www.bbc.co.uk${href}`;
                     const title = $link.text().trim() || 'BBC Food Recipe';
-                    
+
                     if (title.length > 5) {
                         recipes.push({
                             title,
@@ -201,22 +201,22 @@ export class RecipeProvider implements vscode.LanguageModelTool<RecipeSearchInpu
         recipes.forEach((recipe, index) => {
             // Format: "Recipe Name (hyperlink) - Cook time - by Chef"
             let line = `${index + 1}. **[${recipe.title}](${recipe.url})**`;
-            
+
             // Add cooking time if available
             if (recipe.cookingTime) {
                 line += ` - ⏱️ ${recipe.cookingTime}`;
             }
-            
+
             // Add chef if available
             if (recipe.chef) {
                 line += ` - 👨‍🍳 ${recipe.chef}`;
             }
-            
+
             // Add servings if available
             if (recipe.servings) {
                 line += ` - 👥 Serves ${recipe.servings}`;
             }
-            
+
             result += line + '\n\n';
         });
 
