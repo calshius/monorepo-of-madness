@@ -84,7 +84,7 @@ Query vectorized documents using natural language.
 **Options:**
 - `--threshold, -t`: Similarity threshold (default: 0.7)
 - `--max-results, -n`: Maximum results to return (default: 10)
-- `--model, -m`: Chat model to use (default: gpt-3.5-turbo)
+- `--model, -m`: Chat model to use (default: gemini-1.5-flash)
 
 **Example:**
 ```bash
@@ -131,8 +131,8 @@ POSTGRES_PASSWORD=rag_password
 GEMINI_API_KEY=your_gemini_api_key_here
 
 # Model Configuration
-EMBEDDING_MODEL=text-embedding-ada-002
-CHAT_MODEL=gpt-3.5-turbo
+EMBEDDING_MODEL=models/text-embedding-004
+CHAT_MODEL=gemini-1.5-flash
 
 # Default Settings
 DEFAULT_CHUNK_SIZE=1000
@@ -189,7 +189,7 @@ pytest
 2. **Embedding Generation**: Each chunk is converted to a vector embedding using Gemini's API
 3. **Storage**: Documents and embeddings are stored in PostgreSQL with pgvector extension
 4. **Querying**: User questions are converted to embeddings and similar chunks are found using cosine similarity
-5. **Answer Generation**: Retrieved chunks provide context for GPT to generate comprehensive answers
+5. **Answer Generation**: Retrieved chunks provide context for Gemini to generate comprehensive answers
 
 ## Performance Tips
 
@@ -216,7 +216,7 @@ cd postgres
 ### Gemini API Issues
 - Verify your API key is correct
 - Check your Gemini account has sufficient credits
-- Ensure you have access to the embedding model (text-embedding-ada-002)
+- Ensure you have access to the embedding model (models/text-embedding-004)
 
 ### Memory Issues
 - Reduce chunk size for large documents
