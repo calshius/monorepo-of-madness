@@ -50,13 +50,13 @@ Copy `.env.example` to `.env` and modify as needed:
 
 ### Embedding Dimensions
 
-The default schema is configured for OpenAI's text-embedding-ada-002 model (1536 dimensions). If you're using a different embedding model, update the vector dimension in:
+The default schema is configured for Google Gemini's text-embedding-004 model (768 dimensions). If you're using a different embedding model, update the vector dimension in:
 
-1. `init/01-init-rag-schema.sql` - Change `vector(1536)` to your dimension
+1. `init/01-init-rag-schema.sql` - Change `vector(768)` to your dimension
 2. The similarity search function parameter
 
 Common embedding dimensions:
-- OpenAI text-embedding-ada-002: 1536
+- Google Gemini text-embedding-004: 768
 - Sentence Transformers all-MiniLM-L6-v2: 384
 - Sentence Transformers all-mpnet-base-v2: 768
 
@@ -86,7 +86,7 @@ Stores vector embeddings for document chunks.
 | document_id | INTEGER | Foreign key to documents |
 | chunk_index | INTEGER | Index of chunk within document |
 | content | TEXT | Chunk content |
-| embedding | vector(1536) | Vector embedding |
+| embedding | vector(768) | Vector embedding |
 | metadata | JSONB | Chunk-specific metadata |
 | created_at | TIMESTAMP | Creation timestamp |
 
@@ -96,7 +96,7 @@ Stores vector embeddings for document chunks.
 Performs cosine similarity search on embeddings.
 
 **Parameters:**
-- `query_embedding`: vector(1536) - The query embedding
+- `query_embedding`: vector(768) - The query embedding
 - `similarity_threshold`: float - Minimum similarity score (default: 0.7)
 - `match_count`: int - Maximum results to return (default: 10)
 
@@ -137,7 +137,7 @@ with conn.cursor() as cur:
     document_id = cur.fetchone()[0]
 
 # Insert an embedding
-embedding = np.random.rand(1536).tolist()  # Replace with real embedding
+embedding = np.random.rand(768).tolist()  # Replace with real embedding
 with conn.cursor() as cur:
     cur.execute("""
         INSERT INTO rag.embeddings (document_id, content, embedding)
@@ -145,7 +145,7 @@ with conn.cursor() as cur:
     """, (document_id, "Chunk content", embedding))
 
 # Search for similar content
-query_embedding = np.random.rand(1536).tolist()  # Replace with real query embedding
+query_embedding = np.random.rand(768).tolist()  # Replace with real query embedding
 with conn.cursor() as cur:
     cur.execute("""
         SELECT * FROM rag.similarity_search(%s::vector, 0.5, 5)
