@@ -1,6 +1,6 @@
 # RAG Magic 🧙‍♂️
 
-A powerful CLI tool for Retrieval-Augmented Generation (RAG) operations using PostgreSQL with pgvector and OpenAI embeddings.
+A powerful CLI tool for Retrieval-Augmented Generation (RAG) operations using PostgreSQL with pgvector and Gemini embeddings.
 
 ## Features
 
@@ -17,7 +17,7 @@ A powerful CLI tool for Retrieval-Augmented Generation (RAG) operations using Po
 
 - Python 3.12+
 - Docker (for PostgreSQL database)
-- OpenAI API key
+- Google Gemini API key
 
 ### 2. Setup Database
 
@@ -36,8 +36,8 @@ pip install -e .
 # Initialize configuration
 rag-magic init
 
-# Edit the .env file and add your OpenAI API key
-# OPENAI_API_KEY=your_api_key_here
+# Edit the .env file and add your Gemini API key
+# GEMINI_API_KEY=your_api_key_here
 
 # Test the database connection
 rag-magic test-connection
@@ -127,8 +127,8 @@ POSTGRES_DB=rag_database
 POSTGRES_USER=rag_user
 POSTGRES_PASSWORD=rag_password
 
-# OpenAI Configuration (Required)
-OPENAI_API_KEY=your_openai_api_key_here
+# Gemini Configuration (Required)
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # Model Configuration
 EMBEDDING_MODEL=text-embedding-ada-002
@@ -186,7 +186,7 @@ pytest
 ## How It Works
 
 1. **Document Ingestion**: Files are read, chunked into smaller pieces with configurable overlap
-2. **Embedding Generation**: Each chunk is converted to a vector embedding using OpenAI's API
+2. **Embedding Generation**: Each chunk is converted to a vector embedding using Gemini's API
 3. **Storage**: Documents and embeddings are stored in PostgreSQL with pgvector extension
 4. **Querying**: User questions are converted to embeddings and similar chunks are found using cosine similarity
 5. **Answer Generation**: Retrieved chunks provide context for GPT to generate comprehensive answers
@@ -213,9 +213,9 @@ cd postgres
 ./manage.sh logs
 ```
 
-### OpenAI API Issues
+### Gemini API Issues
 - Verify your API key is correct
-- Check your OpenAI account has sufficient credits
+- Check your Gemini account has sufficient credits
 - Ensure you have access to the embedding model (text-embedding-ada-002)
 
 ### Memory Issues
