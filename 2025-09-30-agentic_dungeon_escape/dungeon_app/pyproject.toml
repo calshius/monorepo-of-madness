@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dungeon-app"
+version = "0.1.0"
+description = "Agentic Dungeon Escape - A text-based adventure game built with Textual"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Callum", email = "your-email@example.com" },
+]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment :: Role-Playing",
+]
+dependencies = [
+    "textual>=6.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/calshius/monorepo-of-madness"
+Repository = "https://github.com/calshius/monorepo-of-madness"
+
+[project.scripts]
+dungeon-app = "dungeon_app.main:main"
+start-dungeon-app = "dungeon_app.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dungeon_app"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/README.md",
+    "/pyproject.toml",
+]
