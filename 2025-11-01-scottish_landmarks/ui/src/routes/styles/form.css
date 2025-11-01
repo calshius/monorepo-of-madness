@@ -1,0 +1,72 @@
+/* Form styling */
+.travel-form {
+  background-color: #f5f5f5;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.travel-form label {
+  color: #222;
+  font-weight: 600;
+}
+
+.travel-form .label {
+  color: #222;
+  font-weight: 600;
+}
+
+.travel-form .help {
+  color: #666;
+}
+
+.travel-form input,
+.travel-form select,
+.travel-form textarea {
+  color: #222;
+}
+
+.travel-form input::placeholder {
+  color: #999;
+}
+
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.interests-grid .checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  color: #222;
+}
+
+.interests-grid .checkbox input {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.interests-grid label {
+  color: #222;
+  font-weight: 500;
+}
+
+.field .help {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
+  margin: 0;
+}
