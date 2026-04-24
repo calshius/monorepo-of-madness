@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Model Benchmark — LangGraph vs rig</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a; color: #e2e8f0; margin: 0; padding: 2rem;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .card {
+      background: #1e293b; border-radius: 12px; padding: 1.5rem;
+      border: 1px solid #334155;
+    }
+    .card h2 { font-size: 0.9rem; color: #94a3b8; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    canvas { max-height: 300px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { text-align: left; padding: 0.6rem 0.75rem; color: #94a3b8; border-bottom: 1px solid #334155; }
+    td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #1e293b; }
+    tr:nth-child(even) td { background: #162032; }
+    .note { color: #64748b; font-size: 0.78rem; margin-top: 1rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Multi-Model Benchmark: Python (LangGraph) vs Rust (rig)</h1>
+  <p class="subtitle">
+    Task: "What is photosynthesis?" — 3 free OpenRouter models — parallel runs —
+    15 Python / 15 Rust runs total
+  </p>
+
+  <div class="legend">
+    <strong style="color:#94a3b8">Models:</strong>
+    <span><span class="dot" style="background:#3b82f6"></span>GPT-5.4</span> <span><span class="dot" style="background:#10b981"></span>Claude Sonnet 4.6</span> <span><span class="dot" style="background:#f97316"></span>Gemini 3.1 Pro Preview</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Avg Latency (ms) — Python</h2>
+      <canvas id="pyLatChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Avg Latency (ms) — Rust</h2>
+      <canvas id="rsLatChart"></canvas>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Avg Total Tokens — Python</h2>
+      <canvas id="pyTokChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Avg Total Tokens — Rust</h2>
+      <canvas id="rsTokChart"></canvas>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Latency per run — Python (ms)</h2>
+      <canvas id="pyLatLine"></canvas>
+    </div>
+    <div class="card">
+      <h2>Latency per run — Rust (ms)</h2>
+      <canvas id="rsLatLine"></canvas>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Eval Accuracy (/5)</h2>
+      <canvas id="accChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Eval Completeness (/5)</h2>
+      <canvas id="compChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Summary Table</h2>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Agent</th><th>Avg Latency (ms)</th><th>Avg Tokens</th>
+            <th>Avg Accuracy</th><th>Avg Completeness</th><th>Runs</th></tr>
+      </thead>
+      <tbody><tr><td>GPT-5.4</td><td>Python</td><td>14492.5</td><td>1307.8</td><td>4.4/5</td><td>2.6/5</td><td>5</td></tr>
+<tr><td>GPT-5.4</td><td>Rust</td><td>20284.1</td><td>1501.6</td><td>4.6/5</td><td>2.8/5</td><td>5</td></tr>
+<tr><td>Claude Sonnet 4.6</td><td>Python</td><td>43069.2</td><td>5492.2</td><td>4.2/5</td><td>4.4/5</td><td>5</td></tr>
+<tr><td>Claude Sonnet 4.6</td><td>Rust</td><td>39107.2</td><td>3966.6</td><td>4.0/5</td><td>3.6/5</td><td>5</td></tr>
+<tr><td>Gemini 3.1 Pro Preview</td><td>Python</td><td>31968.9</td><td>2332.8</td><td>5.0/5</td><td>2.0/5</td><td>5</td></tr>
+<tr><td>Gemini 3.1 Pro Preview</td><td>Rust</td><td>24176.2</td><td>2026.0</td><td>5.0/5</td><td>2.2/5</td><td>5</td></tr></tbody>
+    </table>
+    <p class="note">Runs executed in parallel within each agent. Latency = wall-clock time per individual run.</p>
+  </div>
+
+  <script>
+    const labels  = ["GPT-5.4", "Claude Sonnet 4.6", "Gemini 3.1 Pro Preview"];
+    const colors  = ["#3b82f6", "#10b981", "#f97316"];
+    const pyLat   = [14492.5, 43069.2, 31968.9];
+    const rsLat   = [20284.1, 39107.2, 24176.2];
+    const pyTok   = [1307.8, 5492.2, 2332.8];
+    const rsTok   = [1501.6, 3966.6, 2026.0];
+    const pyAcc   = [4.4, 4.2, 5.0];
+    const rsAcc   = [4.6, 4.0, 5.0];
+    const pyComp  = [2.6, 4.4, 2.0];
+    const rsComp  = [2.8, 3.6, 2.2];
+    const perModelPyLat = {"gpt-5.4": [15366.8, 16198.0, 12984.6, 14568.2, 13345.2], "claude-sonnet-4.6": [45393.2, 42508.0, 40835.8, 42437.8, 44171.2], "gemini-3.1-pro-preview": [25791.0, 31349.2, 35625.9, 38898.5, 28179.9]};
+    const perModelRsLat = {"gpt-5.4": [23473.7, 24875.4, 19831.2, 16729.2, 16511.1], "claude-sonnet-4.6": [30448.5, 35328.6, 34140.9, 51786.2, 43831.7], "gemini-3.1-pro-preview": [23528.6, 20180.0, 30388.8, 28205.2, 18578.2]};
+    const slugs   = ["gpt-5.4", "claude-sonnet-4.6", "gemini-3.1-pro-preview"];
+
+    const AXIS = {
+      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+    };
+
+    function barChart(id, vals, yLabel) {
+      new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{ data: vals, backgroundColor: colors, borderRadius: 6 }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: AXIS.x,
+            y: { ...AXIS.y, title: { display: true, text: yLabel, color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    function groupedBar(id, pyVals, rsVals, yLabel, yMax) {
+      new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Python', data: pyVals, backgroundColor: colors.map(c => c + 'cc'), borderRadius: 4 },
+            { label: 'Rust',   data: rsVals, backgroundColor: colors.map(c => c + '66'),
+               borderColor: colors, borderWidth: 2, borderRadius: 4 },
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#e2e8f0' } } },
+          scales: {
+            x: AXIS.x,
+            y: { ...AXIS.y,
+              ...(yMax ? { min: 0, max: yMax } : {}),
+              title: { display: true, text: yLabel, color: '#94a3b8' }
+            }
+          }
+        }
+      });
+    }
+
+    function lineChart(id, perModel, yLabel) {
+      const datasets = slugs.map((slug, i) => ({
+        label: labels[i],
+        data: perModel[slug] || [],
+        borderColor: colors[i],
+        backgroundColor: colors[i] + '33',
+        pointRadius: 3,
+        tension: 0.3,
+      }));
+      const maxRuns = Math.max(...slugs.map(s => (perModel[s] || []).length));
+      new Chart(document.getElementById(id), {
+        type: 'line',
+        data: {
+          labels: Array.from({length: maxRuns}, (_, i) => i + 1),
+          datasets,
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#e2e8f0' } } },
+          scales: {
+            x: { ...AXIS.x, title: { display: true, text: 'Run #', color: '#94a3b8' } },
+            y: { ...AXIS.y, title: { display: true, text: yLabel, color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    barChart('pyLatChart', pyLat, 'ms');
+    barChart('rsLatChart', rsLat, 'ms');
+    barChart('pyTokChart', pyTok, 'tokens');
+    barChart('rsTokChart', rsTok, 'tokens');
+    groupedBar('accChart',  pyAcc,  rsAcc,  'Score / 5', 5);
+    groupedBar('compChart', pyComp, rsComp, 'Score / 5', 5);
+    lineChart('pyLatLine', perModelPyLat, 'ms');
+    lineChart('rsLatLine', perModelRsLat, 'ms');
+  </script>
+</body>
+</html>
