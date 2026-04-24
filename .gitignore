@@ -58,6 +58,8 @@ build/
 # Rust
 /target/
 Cargo.lock
+*.rs.bk
+*.rs.bak
 
 # Go
 /bin/

@@ -1,0 +1,3 @@
+# Benchmark results are written here at runtime.
+# python_results.jsonl  — written by: cd python_agent && benchmark
+# rust_results.jsonl    — written by: cd rust_agent && cargo run --release
